@@ -4,6 +4,12 @@ var ctx = canvas.getContext('2d')
 var frames = 0;
 var interval;
 
+var audio={
+  start:"audio/10 - Gatebreaker.mp3",
+  play:"audio/26 - Lost Courage.mp3",
+  trunksCharge:"audio/TRUNKS_0_547_US.wav"
+}
+
 var defaultImages = {
   bg: "images/coolBack.png",
   leftH:"images/leftH.png",
@@ -20,7 +26,13 @@ var defaultImages = {
   trunksLost:"images/trunksKO.png",
   trunksBlast: "images/trunksBlasts.png",
   trunksDestroys: "images/hyperBeam.png",
-  trunksTransform:"images/transformStrip.png",
+  trunksTransform1:"images/trunksTransOne.png",  
+  trunksTransform2:"images/trunksTrans2.png",
+  trunksTransform3:"images/trunksTrans3.png",
+  trunksTransform4:"images/trunksTrans4.png",
+  trunksTransform5:"images/trunksTrans5.png",
+  trunksTransform6:"images/trunksTrans6.png",
+  trunksTransform7:"images/trunksTransFinal.png",
   fattyWalks: "images/fattyWalks.png",
   fattyHit:"images/fattyDamage.png",
   fattyBlocks:"images/fattyBlocks.png",
@@ -41,10 +53,15 @@ var defaultImages = {
   superHit:"images/superHit.png",
   superForward:"images/superForwards.png",
   superBlocks:"images/superBlocks.png",
-  superBakwards:"images/superBackwards.png",
+  superBackwards:"images/superBackwards.png",
   superBlasts:"images/superBlasts.png",
   superJumps:"images/superJumps.png",
-  superStands:"images/superStands.png"
+  superStands:"images/superStands.png",
+  meleeStrip1:"images/meleeStrip1.png",
+  meleeStrip2:"images/meleeStrip2.png",
+  meleeStrip3:"images/meleeStrip3.png",
+  meleeStrip4:"images/meleeStrip4.png",
+  digiDash: "images/DigimonDash.png"
 }
 
 function Board(){
@@ -73,8 +90,12 @@ function Health(){
     this.damage = function(){
       trunks.x -=5;
       if(trunks.blocks !== true){
-      this.healthCounter++
-      trunks.image.src = defaultImages.trunksHit
+        if(trunks.transform === true){
+          trunks.image.src = defaultImages.superHit
+        }else{
+        trunks.image.src = defaultImages.trunksHit
+        }
+        this.healthCounter++
       trunks.x -=50;
       trunks.y -= 70;
       trunks.draw();
@@ -149,6 +170,7 @@ function Health2(){
 
 
 function Character(){
+  this.transform = false;
   this.blocks = false;
   this.sx = 0
   this.sy = 0
@@ -163,13 +185,9 @@ function Character(){
   this.isSprite = false;
   this.draw = function(){
     this.boundaries()
-    if(this.isSprite)ctx.drawImage(this.image, 0, 50, 100,100, 183, 173, 140, 140)
-    else ctx.drawImage(this.image, this.x,this.y,this.width,this.height)
-    
+     ctx.drawImage(this.image, this.x,this.y,this.width,this.height)
   }
   this.boundaries = function(){
-    //this.y += 5
-   // blasted.y +=5
     if(this.x + this.width > canvas.width-10) {
         this.x = canvas.width-this.width
     } else if(this.x < 10 ) {
@@ -186,35 +204,12 @@ function Character(){
     }
  }
 
-  // this.isTouching =(item)=>{
-  //      return (this.x < item.x + item.width) &&
-  //       (this.x + this.width > item.x) &&
-  //       (this.y < item.y + item.height) &&
-  //       (this.y + this.height > item.y);
-        
-  // }
-  this.attackLoop1=()=>{
-    
-    this.image.src = defaultImages.trunksAttack    
-    ctx.drawImage(this.image, 0, 50, 100,100, 183, 173, 140, 140)
-  }
-
   this.attack = ()=>{
     if(collides(trunks, gordo)){
        return health2.damage()
     }
   }
 }
-
-//var gordo = new Character(defaultImages.fattyWalks, 250, 0, 270, 70, 700, 500, 525,150)
-// gordo.x=700; 
-// gordo.y = 500;
-// gordo.width = 525;
-// gordo.height = 150;
-// gordo.draw = function(){
-//   ctx.drawImage(this.image,250, 0, 270, 70, this.x,this.y,this.width,this.height)
-// }
-
 
 
 function Character2(sx, sy, sWidth, sHeight){
@@ -238,7 +233,6 @@ function Character2(sx, sy, sWidth, sHeight){
     ctx.drawImage(this.image, this.sx, this.sy, this.sWidth, this.sHeight, this.x,this.y,this.width,this.height)
   }
   this.boundaries = function(){
-      this.y+= 5;
     electric.y = this.y + 50;
     if(this.x +this.width > canvas.width-10) {
         this.x = canvas.width-this.width;
@@ -261,24 +255,9 @@ this.attack = ()=>{
   if(collides(trunks, gordo)){
     return health.damage()
   }
+ }
 }
 
-}
-// var bg = new Board()
-// var health = new Health()
-// var health2 = new Health2()
-// var trunks = new Character()
-// var gordo = new Character2(0, 0, 83, 73)
-// var electric = new SpecialAttack2()
-// var blasted = new SpecialAttack1()
-
-// window.onload = function(){
-//   bg.draw()
-//   health.draw()
-//   health2.draw()
-//   trunks.draw()
-//   gordo.draw()
-// }
 function SpecialAttack1(){
   this.sx = 0;
   this.sy = 50;
@@ -323,17 +302,6 @@ function SpecialAttack2(){
   }
 }
 
-
-
-// function check(call){
-//   if(call === 'electric'){
-//     console.log('i work')
-//     electric.shocked()
-//     electric.draw()
-//     return
-//   }
-// }
-
 function collides(a, b) {
   return a.x < b.x + b.width &&
          a.x + a.width > b.x &&
@@ -354,6 +322,16 @@ function gameOver(){
 }
 
 
+function drawCover(){
+ // var img = new Image()
+  //img.src = images.logo
+  img.onload = function(){
+      bg.draw()
+      //ctx.drawImage(img, 50,100,300,100)
+      ctx.font = "bold 13px 'Press Start 2P'"
+      ctx.fillText("Presiona la tecla 'Return' para comenzar", 20,300)
+  }   
+}
 
 function start(){
   frames = 0
@@ -369,25 +347,44 @@ var electric = new SpecialAttack2()
 var blasted = new SpecialAttack1()
 
 var iterator = 0;
+var iterator1 = 0;
+var iterator2 = 0;
 
 function update(){
   frames++;
   ctx.clearRect(0,0,canvas.width, canvas.height);
   bg.draw()
-  //health.draw()
-  //health2.draw()
-  trunks.draw()
   gordo.draw()
   health.bar()
   health2.bar()
-  //gordo.superModeTrue()
-  //blasted.draw()
-  //blasted.destroyed()
-  //check()
-  // electric.shocked()
-  //check()
-
   
+  if(keydown.alt){
+    trunks.draw()
+    trunks.attack()
+    if(frames%7===0){
+    if(iterator2 === 0){
+      if(trunks.transform===true){
+      trunks.height = 270;
+      trunks.width = 230;
+      trunks.image.src = defaultImages.meleeStrip1
+      iterator2++
+      }
+    }else if(iterator2 ===1){
+      trunks.height =270;
+      trunks.width =230;
+      trunks.image.src = defaultImages.meleeStrip2
+      iterator2++
+    }else if(iterator2 ===2){
+      trunks.image.src = defaultImages.meleeStrip3
+      trunks.height =270;
+      trunks.width =230;
+      iterator2++
+    }else if(iterator2 ===3){
+      trunks.image.src = defaultImages.meleeStrip4
+      iterator2=0
+    }
+  }
+}
 
   if (keydown.left) {
     trunks.x -= 10;
@@ -428,15 +425,57 @@ function update(){
     gordo.y += 10;
     electric.y +=10;
   }
+  if(keydown.e){
+    if(gordo.transform === true){
+      gordo.attack()
+      gordo.x -= 50;
+    }
+    electric.x =gordo.x -5;
+  }
+
 
   if(keydown.space){
-    trunks.image.src = defaultImages.trunksTransform
-    trunks.sx = 0;
-    trunks.sy = 0;
-    trunks.sWidth = 155;
-    trunks.sHeight = 390;
-    //trunks.draw()
+    trunks.blocks=true; 
+    trunks.draw()
+    if(frames%7 === 0){
+    if(iterator1 === 0){
+      trunks.image.src = defaultImages.trunksTransform1
+      iterator1++
+    }else if(iterator1 === 1){
+      trunks.width = 203;
+      trunks.height = 178;
+      trunks.y = 460;
+      trunks.image.src = defaultImages.trunksTransform2
+      iterator1++
+    }else if(iterator1 ===2){
+      trunks.width = 250;
+      trunks.height = 340;
+      trunks.image.src = defaultImages.trunksTransform3
+      iterator1++
+    }else if(iterator1 ===3){
+      trunks.x -= 70;
+      trunks.width = 390;
+      trunks.height = 580;
+      trunks.image.src = defaultImages.trunksTransform4
+      iterator1++
+    }else if(iterator1 ===4){
+      trunks.image.src = defaultImages.trunksTransform5
+      iterator1++
+    }else if(iterator1 ===5){
+      trunks.height = 450;
+      trunks.y = 450
+      trunks.image.src = defaultImages.trunksTransform6
+      iterator1++
+    }else if(iterator1===6){
+      trunks.height = 300;
+      trunks.width = 220;
+      trunks.y = 450;
+      trunks.x += 45;
+      trunks.image.src = defaultImages.trunksTransform7
+      iterator1++
+    }
   }
+}
 
   if(keydown.q){
     electric.shocked()
@@ -447,6 +486,8 @@ function update(){
       electric.sy = 0;
     }
   }
+
+  trunks.draw()
 
     if(keydown.shift){
       blasted.destroyed()
@@ -598,31 +639,13 @@ function update(){
       }
       
       blasted.draw()
-  
-        // for(i=0; i < 10; i++){
-        //   if(i === 0){
-        //     blasted.sx = 0;
-        //     blasted.sy = 50;
-        //     blasted.sHeight = 50;
-        //     blasted.sWidth = 86;
-        //     blasted.height = 55;
-        //     console.log('im not that shitty')
-        //   }else if(i === 1){
-        //     blasted.sx = 100;
-        //     blasted.sy = 35;
-        //     blasted.sWidth = 125;
-        //     blasted.sHeight = 85;
-        //     blasted.width = 125;
-        //     blasted.height = 85;
-        //     console.log('n uther one')
-        //   }
-        //   blasted.draw()
-        // }
+
       }
     }
 
 
 addEventListener('keydown', function(e){
+  e.preventDefault()
   switch(e.keyCode){
     case 65:
     if(gordo.transform === true){
@@ -630,35 +653,48 @@ addEventListener('keydown', function(e){
       gordo.draw()
     }
     case 39:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superForward
+    }else{
     trunks.image.src = defaultImages.trunksForward
+    }
     trunks.width = 160
     trunks.draw()
     return
     case 37:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superBackwards
+    }else{
     trunks.image.src = defaultImages.trunksBackwards
+    }
     trunks.width = 160
     trunks.draw()
     return
     case 38:
     //up
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superJumps
+    }else{
+    trunks.image.src = defaultImages.trunksJumps
+    }
     blasted.y -=150;
     trunks.y -= 150;
-    trunks.image.src = defaultImages.trunksJumps
     return
     case 191:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superBlocks
+    }else{
     trunks.image.src = defaultImages.trunksBlocks
+    }
     trunks.draw()
     trunks.blocks = true;
     return
-    case 18:
-     trunks.image.src = defaultImages.trunksAttack
-     trunks.draw(true)
-    // trunks.width = 220
-    // trunks.draw()
-    //trunks.attackLoop1()
     case 16:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superBlasts
+    }else{
     trunks.image.src = defaultImages.trunksBlast
-    
+    }
     trunks.attack()
     return
     case 49:
@@ -670,8 +706,8 @@ addEventListener('keydown', function(e){
     gordo.image.src = defaultImages.fattyBlocks
     gordo.sx = 0;
     gordo.sy = 0;
-    gordo.sWidth = 65;
-    gordo.sHeight = 57;
+    gordo.sWidth = 230;
+    gordo.sHeight = 217;
     gordo.draw()
     gordo.blocks = true;
     }
@@ -716,10 +752,6 @@ addEventListener('keydown', function(e){
     gordo.sHeight = 73;
     gordo.draw()
     gordo.attack()
-    //electric.image.src = defaultImages.fattyShocks
-    //electric.draw()
-    //  var elecTrue = 'electric'
-    //  check(elecTrue)
     }
     return
     case 88:
@@ -737,34 +769,61 @@ addEventListener('keydown', function(e){
       gordo.draw()
     }
     return
-    case 32:
-      trunks.isSprite = true;
+    case 69:
+    if(gordo.transform === true){
+    gordo.image.src= defaultImages.digiDash
+    gordo.sWidth = 300
+    gordo.width = 260;
+    gordo.draw()
+    }
   }
 })
 
 addEventListener('keyup', function(e){
   switch(e.keyCode){
     case 39:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superStands
+    }else{
     trunks.image.src = defaultImages.idleTrunks
+    }
     trunks.width = 120
     trunks.draw()
     return
     case 37:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superStands
+    }else{
     trunks.image.src = defaultImages.idleTrunks
+    }
     trunks.width = 120
     trunks.draw()
     return
     case 191:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superStands
+    }else{
     trunks.image.src = defaultImages.idleTrunks
+    }
     trunks.draw()
     trunks.blocks = false;
     return
-    case 38: 
+    case 38:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superStands
+    }else{
     trunks.image.src = defaultImages.idleTrunks
+    }
     trunks.draw()
     return
     case 18:
+    if(trunks.transform === true){
+      trunks.height = 200;
+      trunks.width = 120;
+      trunks.image.src = defaultImages.superStands
+    }else{
     trunks.image.src = defaultImages.idleTrunks
+    }
     trunks.width = 120
     trunks.draw()
     return
@@ -816,18 +875,36 @@ addEventListener('keyup', function(e){
     }
     return
     case 16:
+    if(trunks.transform === true){
+      trunks.image.src = defaultImages.superStands
+    }else{
     trunks.image.src = defaultImages.idleTrunks
+    }
     trunks.draw()
     return
     case 88:
     gordo.sWidth = 200;
     gordo.sHeight = 250;
     gordo.image.src = defaultImages.fatMon
+    return
+    case 32:
+    trunks.blocks= false;
+    trunks.transform = true;
+    trunks.width=120;
+    trunks.height = 200;
+    trunks.y = 450;
+    trunks.x += 40;
+    trunks.image.src = defaultImages.superStands
   }
 })
 
+// addEventListener('keyup',function(e){
+//   switch(e.keyCode){
+//       case 13:
+//           return start()
+//       default:
+//           return
+//   }
+// } )
 
-
-
-//0, 50, 200, 50,
 start()
