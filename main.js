@@ -14,6 +14,7 @@ var audio={
 
 var defaultImages = {
   bg: "images/coolBack.png",
+  logo: "images/X-Fighters.png",
   leftH:"images/leftH.png",
   rightH: "images/rightH.png",
   idleTrunks: "images/trunksStandsFinal2.png",
@@ -331,13 +332,11 @@ function gameOver(){
 
 
 function drawCover(){
- // var img = new Image()
-  //img.src = images.logo
+  var img = new Image()
+  img.src = defaultImages.logo
   img.onload = function(){
       bg.draw()
-      //ctx.drawImage(img, 50,100,300,100)
-      ctx.font = "bold 13px 'Press Start 2P'"
-      ctx.fillText("Presiona la tecla 'Return' para comenzar", 20,300)
+      ctx.drawImage(img, 200,300,600,200)
   }   
 }
 
@@ -930,4 +929,5 @@ addEventListener('keyup',function(e){
   }
 } )
 
+drawCover()
 //start()
