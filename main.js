@@ -5,9 +5,11 @@ var frames = 0;
 var interval;
 
 var audio={
-  start:"audio/10 - Gatebreaker.mp3",
-  play:"audio/26 - Lost Courage.mp3",
-  trunksCharge:"audio/TRUNKS_0_547_US.wav"
+  start:"audio/26 - Lost Courage.mp3",
+  punching:"audio/TRUNKS_0_018_US.wav",
+  trunksCharge:"audio/TRUNKS_4_558_US.wav",
+  trunksScreaming:"audio/TRUNKS_4_589_US.wav",
+  damageNoise: "audio/12 - damage_kick_s.wav"
 }
 
 var defaultImages = {
@@ -88,6 +90,9 @@ function Health(){
     }
   this.healthCounter = 0;
     this.damage = function(){
+      bang = new Audio()
+      bang.src = audio.damageNoise
+      bang.play()
       trunks.x -=5;
       if(trunks.blocks !== true){
         if(trunks.transform === true){
@@ -133,6 +138,9 @@ function Health2(){
     }
 
     this.damage = function(){
+      bang = new Audio()
+      bang.src = audio.damageNoise
+      bang.play()
       gordo.x+=2;
       if(gordo.blocks !== true){
         if(gordo.transform === true){
@@ -334,6 +342,9 @@ function drawCover(){
 }
 
 function start(){
+  bgSound = new Audio();
+  bgSound.src = audio.start;
+  bgSound.play();
   frames = 0
   if(!interval) interval = setInterval(update,1000/60)
 }
@@ -346,9 +357,12 @@ var gordo = new Character2(0, 0, 83, 73)
 var electric = new SpecialAttack2()
 var blasted = new SpecialAttack1()
 
+
+
 var iterator = 0;
 var iterator1 = 0;
 var iterator2 = 0;
+
 
 function update(){
   frames++;
@@ -359,6 +373,8 @@ function update(){
   health2.bar()
   
   if(keydown.alt){
+    punching = new Audio()
+      punching.src = audio.punching
     trunks.draw()
     trunks.attack()
     if(frames%7===0){
@@ -374,6 +390,7 @@ function update(){
       trunks.width =230;
       trunks.image.src = defaultImages.meleeStrip2
       iterator2++
+      punching.play()
     }else if(iterator2 ===2){
       trunks.image.src = defaultImages.meleeStrip3
       trunks.height =270;
@@ -435,12 +452,15 @@ function update(){
 
 
   if(keydown.space){
-    trunks.blocks=true; 
+    trunks.blocks = true;
     trunks.draw()
+    powerUp = new Audio()
+    powerUp.src = audio.trunksCharge
     if(frames%7 === 0){
     if(iterator1 === 0){
       trunks.image.src = defaultImages.trunksTransform1
       iterator1++
+      powerUp.play()
     }else if(iterator1 === 1){
       trunks.width = 203;
       trunks.height = 178;
@@ -490,9 +510,12 @@ function update(){
   trunks.draw()
 
     if(keydown.shift){
+      taunt = new Audio()
+    taunt.src = audio.trunksScreaming
       blasted.destroyed()
       if(frames %3 === 0){
         if(iterator===0){
+          taunt.play();
           blasted.sx = 0;
           blasted.sy = 50;
           blasted.sHeight = 50;
@@ -898,13 +921,13 @@ addEventListener('keyup', function(e){
   }
 })
 
-// addEventListener('keyup',function(e){
-//   switch(e.keyCode){
-//       case 13:
-//           return start()
-//       default:
-//           return
-//   }
-// } )
+addEventListener('keyup',function(e){
+  switch(e.keyCode){
+      case 13:
+          return start()
+      default:
+          return
+  }
+} )
 
-start()
+//start()
